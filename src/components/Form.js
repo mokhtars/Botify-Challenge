@@ -3,6 +3,11 @@ import  moment  from 'moment';
 import { connect } from 'react-redux';
 import { addComment } from '../actions';
 
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email.toLowerCase());
+}
+
 
 class Form extends Component {
     constructor(props) {
@@ -11,13 +16,22 @@ class Form extends Component {
             username: '',
             email: '',
             content: '',
-            date: ''
+            date: '',
+            // validation
+            error: null
         }
     }
 
     //Add comment when submit
     addComment(evt) {
         evt.preventDefault();
+        //if invalid we pop this message
+        if (this.state.email && !validateEmail(this.state.email)) {
+            this.setState({
+                error: 'Your email is not valid',
+            });
+            return;
+        }
         // Call method addComment from action directory
         this.props.addComment({
             username: this.state.username,
@@ -34,15 +48,25 @@ class Form extends Component {
             username:'',
             email:'',
             content:'',
-            date:''
+            date:'',
+            error: null,
+
         });
     }
 
+    renderError() {
+        return (
+            <div className="alert alert-danger">{this.state.error}</div>
+        )
+    }
+
+
     render() {
-        const { username, email, content } = this.state;
+        const { username, email, content, error } = this.state;
         /* Forms for comments, write in real time with function onChange */
         return (
             <form onSubmit={(evt) => this.addComment(evt)}>
+                {error && this.renderError()}
                 <div className="form-group">
                     <input
                         type="text"
