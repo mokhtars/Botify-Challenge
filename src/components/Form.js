@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import  moment  from 'moment';
 import { connect } from 'react-redux';
+import { addComment } from '../actions';
 
 
 class Form extends Component {
@@ -14,12 +15,34 @@ class Form extends Component {
         }
     }
 
+    //Add comment when submit
+    addComment(evt) {
+        evt.preventDefault();
+        // Call method addComment from action directory
+        this.props.addComment({
+            username: this.state.username,
+            email: this.state.email,
+            content: this.state.content,
+            date: moment().format('MMMM Do YYYY, h:mm:ss a')
+        });
+
+        this.resetState();
+    }
+
+    resetState() {
+        this.setState({
+            username:'',
+            email:'',
+            content:'',
+            date:''
+        });
+    }
 
     render() {
         const { username, email, content } = this.state;
         /* Forms for comments, write in real time with function onChange */
         return (
-            <form >
+            <form onSubmit={(evt) => this.addComment(evt)}>
                 <div className="form-group">
                     <input
                         type="text"
@@ -56,8 +79,7 @@ class Form extends Component {
         );
     }
 
-
-
-
-
 }
+
+//Connect the store with the compenent
+export default connect(null, { addComment })(Form);
